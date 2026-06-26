@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Expense Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #eef2ff, #dbeafe);
+      min-height: 100vh;
+      padding: 30px;
+      color: #1e293b;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #2563eb;
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin-bottom: 8px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 25px;
+    }
+
+    .card {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: inset 0 0 0 1px #e2e8f0;
+    }
+
+    .card h2 {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      color: #0f172a;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .summary {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .summary-box {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      border-left: 6px solid #2563eb;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .summary-box h3 {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-bottom: 5px;
+    }
+
+    .summary-box p {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .expense-list {
+      grid-column: 1 / -1;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .expense-info {
+      flex: 1;
+    }
+
+    .expense-info strong {
+      display: block;
+      color: #0f172a;
+    }
+
+    .expense-info span {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .expense-amount {
+      font-weight: bold;
+      color: #dc2626;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      width: auto;
+      padding: 10px 14px;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+
+    .warning {
+      color: #dc2626;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Smart Daily Expense Tracker</h1>
+      <p>Track your spending and stay within budget</p>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <h2>Set Budget</h2>
+        <label for="budget">Monthly Budget</label>
+        <input type="number" id="budget" placeholder="Enter your budget" />
+        <button onclick="setBudget()">Save Budget</button>
+      </div>
+
+      <div class="card">
+        <h2>Add Expense</h2>
+        <label for="title">Expense Title</label>
+        <input type="text" id="title" placeholder="e.g. Grocery" />
+
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" placeholder="e.g. 250" />
+
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Bills">Bills</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <button onclick="addExpense()">Add Expense</button>
+      </div>
+
+      <div class="card summary">
+        <div class="summary-box">
+          <h3>Total Budget</h3>
+          <p id="totalBudget">₱0</p>
+        </div>
+        <div class="summary-box">
+          <h3>Total Spent</h3>
+          <p id="totalSpent">₱0</p>
+        </div>
+        <div class="summary-box">
+          <h3>Remaining Budget</h3>
+          <p id="remainingBudget">₱0</p>
+          <div id="warningMessage" class="warning"></div>
+        </div>
+      </div>
+
+      <div class="card expense-list">
+        <h2>Expense History</h2>
+        <div id="expenseList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let budget = localStorage.getItem("budget") ? parseFloat(localStorage.getItem("budget")) : 0;
+    let expenses = localStorage.getItem("expenses") ? JSON.parse(localStorage.getItem("expenses")) : [];
+
+    function saveData() {
+      localStorage.setItem("budget", budget);
+      localStorage.setItem("expenses", JSON.stringify(expenses));
+    }
+
+    function setBudget() {
+      const budgetInput = document.getElementById("budget");
+      const value = parseFloat(budgetInput.value);
+
+      if (isNaN(value) || value <= 0) {
+        alert("Please enter a valid budget amount.");
+        return;
+      }
+
+      budget = value;
+      budgetInput.value = "";
+      saveData();
+      render();
+    }
+
+    function addExpense() {
+      const title = document.getElementById("title").value.trim();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const category = document.getElementById("category").value;
+
+      if (!title || isNaN(amount) || amount <= 0) {
+        alert("Please enter valid expense details.");
+        return;
+      }
+
+      expenses.push({
+        id: Date.now(),
+        title,
+        amount,
+        category
+      });
+
+      document.getElementById("title").value = "";
+      document.getElementById("amount").value = "";
+      document.getElementById("category").value = "Food";
+
+      saveData();
+      render();
+    }
+
+    function deleteExpense(id) {
+      expenses = expenses.filter(expense => expense.id !== id);
+      saveData();
+      render();
+    }
+
+    function render() {
+      const totalSpent = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const remaining = budget - totalSpent;
+
+      document.getElementById("totalBudget").textContent = `₱${budget.toFixed(2)}`;
+      document.getElementById("totalSpent").textContent = `₱${totalSpent.toFixed(2)}`;
+      document.getElementById("remainingBudget").textContent = `₱${remaining.toFixed(2)}`;
+
+      const warningMessage = document.getElementById("warningMessage");
+      if (remaining < 0) {
+        warningMessage.textContent = "Warning: You have exceeded your budget!";
+      } else if (remaining < budget * 0.2 && budget > 0) {
+        warningMessage.textContent = "Caution: You are close to your budget limit.";
+      } else {
+        warningMessage.textContent = "";
+      }
+
+      const expenseList = document.getElementById("expenseList");
+      expenseList.innerHTML = "";
+
+      if (expenses.length === 0) {
+        expenseList.innerHTML = "<p>No expenses added yet.</p>";
+        return;
+      }
+
+      expenses.forEach(expense => {
+        const item = document.createElement("div");
+        item.className = "expense-item";
+
+        item.innerHTML = `
+          <div class="expense-info">
+            <strong>${expense.title}</strong>
+            <span>${expense.category}</span>
+          </div>
+          <div class="expense-amount">₱${expense.amount.toFixed(2)}</div>
+          <button class="delete-btn" onclick="deleteExpense(${expense.id})">Delete</button>
+        `;
+
+        expenseList.appendChild(item);
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
